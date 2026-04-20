@@ -37,6 +37,7 @@ ALDI = [
     "Apfelmus",
     "Senf",
     "Kokosnussmilch",
+    "Salz",
     # Brot und Kaffee
     "Eiweißbrot", 
     "Kaffee",
