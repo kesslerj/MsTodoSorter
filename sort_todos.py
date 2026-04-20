@@ -24,7 +24,8 @@ ALDI = [
     "Obst", 
     "Bananen",
     "Zucchini",
-    "Tomaten", 
+    "Tomaten",
+    "Snacktomaten",
     "Gurke",
     "Paprika", 
     "Schalotten",
@@ -32,6 +33,10 @@ ALDI = [
     "Rosenkohl",
     "Brokkoli",
     "Senf",
+    # Konserven etc.
+    "Apfelmus",
+    "Senf",
+    "Kokosnussmilch",
     # Brot und Kaffee
     "Eiweißbrot", 
     "Kaffee",
@@ -50,9 +55,19 @@ ALDI = [
     # Haushalt
     "Klopapier",
     "Küchenrolle",
-    "Zahnpasta"
+    "Zahnpasta",
+    "Frischhaltefolie",
+    "Müllbeutel",
+    "Biomüllbeutel"
 ]
 EDEKA = [
+    # Konserven
+    "Passierte Tomaten",
+    # Backen
+    "Mehl",
+    "Backpulver",
+    # Brot
+    "Paniermehl",
     "Puffies", 
     "Roggen Vollkornbrot GG",
     # Obst, Gemüse und Bio
@@ -60,15 +75,18 @@ EDEKA = [
     "Milch", 
     "Joghurt",
     "GG Erdnüsse ungeschält",
+    # Pasta etc.
+    "Limettensaft,
     # Fleischregal
+    "GG Oliven",
     "Schinken",
     "Schinkenwürfel",
     "Bacon",
     # MoPro 
     "Krautsalat", 
-    "GG Oliven",
     "Streukäse",
     "Mozzarella",
+    "Butter",
     "Streichzart",
     "Frischkäse", 
     "körniger Frischkäse",
