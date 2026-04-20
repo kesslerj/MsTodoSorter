@@ -51,7 +51,7 @@ ALDI = [
     "Parmesan",
     "Stinkekäse",
     "Eiweiß Schokomousse", 
-    "Zero Getränke"
+    "Zero Getränke",
     # Haushalt
     "Klopapier",
     "Küchenrolle",
