@@ -76,7 +76,7 @@ EDEKA = [
     "Joghurt",
     "GG Erdnüsse ungeschält",
     # Pasta etc.
-    "Limettensaft,
+    "Limettensaft",
     # Fleischregal
     "GG Oliven",
     "Schinken",
