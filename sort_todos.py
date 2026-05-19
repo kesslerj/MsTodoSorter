@@ -39,6 +39,7 @@ ALDI = [
     "Kokosnussmilch",
     "Salz",
     # Brot und Kaffee
+    "Graubrot",
     "Eiweißbrot", 
     "Kaffee",
     # Schoki, Kekse, Nudeln, Reis
@@ -62,11 +63,18 @@ ALDI = [
     "Biomüllbeutel"
 ]
 EDEKA = [
+    # Getränke
+    "Osaft",
+    "Bionade",
     # Konserven
     "Passierte Tomaten",
+    "Brühe",
+    "Erasco",
+    "Asia Suppe",
     # Backen
     "Mehl",
     "Backpulver",
+    "Nesquik",
     # Brot
     "Paniermehl",
     "Puffies", 
@@ -78,6 +86,8 @@ EDEKA = [
     "GG Erdnüsse ungeschält",
     # Pasta etc.
     "Limettensaft",
+    "Barilla",
+    "Ravioli"
     # Fleischregal
     "GG Oliven",
     "Schinken",
@@ -87,6 +97,7 @@ EDEKA = [
     "Krautsalat", 
     "Streukäse",
     "Mozzarella",
+    "Saint Albray",
     "Butter",
     "Streichzart",
     "Frischkäse", 
@@ -97,6 +108,7 @@ EDEKA = [
     "Schmand",
     "Cremefine",
     "Skyr", 
+    "Butterschmalz",
     # Theke
     "Leberwurst / Aufschnitt", 
     "Käse",
@@ -104,7 +116,9 @@ EDEKA = [
     # TK
     "TK Laugenstangen",
     "TK Himbeeren",
-    "Edeka Frosta"
+    "Edeka Frosta",
+    # Süßwaren
+    "Haribo"
 ]
 
 SEPARATOR_UNSORTIERT = "----------- UNSORTIERT -----------"
