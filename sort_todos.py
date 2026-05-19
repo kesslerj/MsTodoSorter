@@ -46,9 +46,9 @@ ALDI = [
     "Schoki",
     "Reis",
     # Kühltheke
-    "Aldi Hähnchen-/Putenaufschnitt",
+    "Hähnchen-/Putenaufschnitt",
     "Salami",
-    "Gouda Aldi",
+    "Gouda",
     "Erzherzog Johann",
     "Parmesan",
     "Stinkekäse",
@@ -87,7 +87,7 @@ EDEKA = [
     # Pasta etc.
     "Limettensaft",
     "Barilla",
-    "Ravioli"
+    "Ravioli",
     # Fleischregal
     "GG Oliven",
     "Schinken",
@@ -116,7 +116,7 @@ EDEKA = [
     # TK
     "TK Laugenstangen",
     "TK Himbeeren",
-    "Edeka Frosta",
+    "Frosta",
     # Süßwaren
     "Haribo"
 ]
