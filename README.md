@@ -17,7 +17,13 @@ File `.env`:
 
 
 
+## Tests
+
+    pip install -r requirements-dev.txt
+    python -m pytest
+
 ## Todos
 - Dokumentieren, wo die List-Id herkommt
 - Einfachere Authentifizierung als Access-Token kopieren
 - auf dem Handy lauffähig machen
+- Nicht gefundene Einträge in eine Datei schreiben
