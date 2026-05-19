@@ -127,6 +127,9 @@ SEPARATOR_EDEKA = "----------- EDEKA -----------"
 SEPARATORS = {SEPARATOR_UNSORTIERT, SEPARATOR_ALDI, SEPARATOR_EDEKA}
 
 
+STORES = {"aldi": ALDI, "edeka": EDEKA}
+
+
 def matches_template(subject, template):
     s = subject.lower().strip()
     t = template.lower()
@@ -136,14 +139,28 @@ def matches_template(subject, template):
     return bool(re.match(pattern, s))
 
 
+def extract_store_prefix(subject):
+    s = subject.lower().strip()
+    for store_name in STORES:
+        if s.startswith(store_name + " "):
+            return store_name, subject.strip()[len(store_name):].strip()
+    return None, subject.strip()
+
+
 def find_category_and_position(subject):
-    s = subject.strip()
-    for i, v in enumerate(ALDI):
-        if matches_template(s, v):
-            return "aldi", i
-    for i, v in enumerate(EDEKA):
-        if matches_template(s, v):
-            return "edeka", i
+    store_override, stripped = extract_store_prefix(subject)
+
+    if store_override:
+        for i, v in enumerate(STORES[store_override]):
+            if matches_template(stripped, v):
+                return store_override, i
+        # Prefix erkannt, aber kein Template-Match → an den Anfang des Ladens einsortieren
+        return store_override, -1
+
+    for store_name, store_list in STORES.items():
+        for i, v in enumerate(store_list):
+            if matches_template(subject.strip(), v):
+                return store_name, i
     return "unsortiert", 0
 
 
