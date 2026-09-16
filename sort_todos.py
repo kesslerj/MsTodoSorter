@@ -100,7 +100,9 @@ EDEKA = [
     "Milch", 
     "Joghurt",
     "GG Erdnüsse ungeschält",
-    # Pasta etc.
+    # Saucen, Pasta etc.
+    "Currypaste",
+    "Pommes Sauce",
     "Limettensaft",
     "Sambal",
     "Barilla",
