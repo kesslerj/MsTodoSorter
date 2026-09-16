@@ -94,12 +94,12 @@ class TestFindCategoryAndPosition:
     def test_aldi_item(self):
         cat, pos = find_category_and_position("Bananen")
         assert cat == "aldi"
-        assert pos == 1
+        assert pos == ALDI.index("Bananen")
 
     def test_edeka_item(self):
         cat, pos = find_category_and_position("Bionade")
         assert cat == "edeka"
-        assert pos == 1
+        assert pos == EDEKA.index("Bionade")
 
     def test_unknown_item(self):
         cat, pos = find_category_and_position("Fischstäbchen")
@@ -108,7 +108,7 @@ class TestFindCategoryAndPosition:
     def test_edeka_prefix_with_edeka_item(self):
         cat, pos = find_category_and_position("Edeka Bionade")
         assert cat == "edeka"
-        assert pos == 1
+        assert pos == EDEKA.index("Bionade")
 
     def test_aldi_prefix_overrides_edeka_list(self):
         cat, pos = find_category_and_position("Aldi Bionade")
@@ -128,17 +128,17 @@ class TestFindCategoryAndPosition:
     def test_aldi_prefix_with_aldi_item(self):
         cat, pos = find_category_and_position("Aldi Schoki")
         assert cat == "aldi"
-        assert pos == 19
+        assert pos == ALDI.index("Schoki")
 
     def test_quantity_prefix(self):
         cat, pos = find_category_and_position("2x Bananen")
         assert cat == "aldi"
-        assert pos == 1
+        assert pos == ALDI.index("Bananen")
 
     def test_edeka_prefix_with_quantity(self):
         cat, pos = find_category_and_position("Edeka 2x Bionade")
         assert cat == "edeka"
-        assert pos == 1
+        assert pos == EDEKA.index("Bionade")
 
 
 class TestGoudaPrefixParity:

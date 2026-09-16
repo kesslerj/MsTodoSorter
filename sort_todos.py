@@ -24,6 +24,7 @@ ALDI = [
     "Obst", 
     "Bananen",
     "Zucchini",
+    "Rucola",
     "Tomaten",
     "Snacktomaten",
     "Gurke",
@@ -32,13 +33,13 @@ ALDI = [
     "Ingwer",
     "Rosenkohl",
     "Brokkoli",
-    "Senf",
     # Konserven etc.
     "Apfelmus",
     "Senf",
     "Kokosnussmilch",
     "Salz",
     # Brot und Kaffee
+    "Schwarzbrot",
     "Graubrot",
     "Eiweißbrot", 
     "Kaffee",
@@ -52,19 +53,31 @@ ALDI = [
     "Gouda",
     "Erzherzog Johann",
     "Parmesan",
+    "Ziegenfrischkäse",
     "Stinkekäse",
-    "Eiweiß Schokomousse", 
+    "Bresso",
+    "Sour Creme",
+    "Eiweiß Schokomousse",
+    # Getränke, Chips, Nüsse
+    "Cola",
+    "Apfelschorle",
     "Zero Getränke",
+    "Chipsfrisch",
+    "Salzige Mandeln",
     # Haushalt
     "Klopapier",
     "Küchenrolle",
+    "Spülmaschinentabs",
     "Zahnpasta",
     "Frischhaltefolie",
     "Müllbeutel",
     "Biomüllbeutel"
 ]
 EDEKA = [
+    # Chips, Nüsse
+    "Chipsfrisch",
     # Getränke
+    "Hella",
     "Osaft",
     "Bionade",
     # Konserven
@@ -72,6 +85,8 @@ EDEKA = [
     "Brühe",
     "Erasco",
     "Asia Suppe",
+    "Gewürzgurken",
+    "Schwarze Oliven",
     # Backen
     "Mehl",
     "Backpulver",
@@ -87,11 +102,13 @@ EDEKA = [
     "GG Erdnüsse ungeschält",
     # Pasta etc.
     "Limettensaft",
+    "Sambal",
     "Barilla",
     "Ravioli",
     # Fleischregal
     "GG Oliven",
     "Schinken",
+    "Kochschinken",
     "Schinkenwürfel",
     "Bacon",
     # MoPro 
@@ -104,6 +121,7 @@ EDEKA = [
     "Frischkäse", 
     "körniger Frischkäse",
     "Eiweißjoghurt",
+    "Quark",
     "Magerquark", 
     "Sahne",
     "Schmand",
@@ -118,6 +136,7 @@ EDEKA = [
     "TK Laugenstangen",
     "TK Himbeeren",
     "Frosta",
+    "Eis",
     # Süßwaren
     "Haribo"
 ]
