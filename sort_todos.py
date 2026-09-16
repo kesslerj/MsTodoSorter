@@ -45,6 +45,7 @@ ALDI = [
     # Schoki, Kekse, Nudeln, Reis
     "Schoki",
     "Reis",
+    "Reis hellblau",
     # Kühltheke
     "Hähnchen-/Putenaufschnitt",
     "Salami",
@@ -129,38 +130,59 @@ SEPARATORS = {SEPARATOR_UNSORTIERT, SEPARATOR_ALDI, SEPARATOR_EDEKA}
 
 STORES = {"aldi": ALDI, "edeka": EDEKA}
 
+# Zusätzliche Schreibweisen, die als Laden-Prefix gelten ("GG" = Gut & Günstig).
+STORE_ALIASES = {**{name: name for name in STORES}, "gg": "edeka"}
+
 
 def matches_template(subject, template):
     s = subject.lower().strip()
     t = template.lower()
-    # Matcht: exakt, "Joghurt X", "Joghurt 3x", "2 Joghurt", "2x Joghurt",
-    #         "Joghurt 2,49", "Joghurt 2,49€", "Joghurt 2,49 €"
-    pattern = rf"^(\d+x?\s+)?{re.escape(t)}(\s+\d*x?)?(\s+\d+[.,]\d+\s*€?)?$"
+    # Matcht: exakt, "Joghurt 3x", "2 Joghurt", "2x Joghurt", "Joghurt 2,49 €"
+    # sowie beliebige Zusätze ("Joghurt Natur").
+    # Der Zusatz braucht führenden Whitespace, sonst würde "Joghurteis" mitmatchen.
+    pattern = rf"^(\d+x?\s+)?{re.escape(t)}(\s+.*)?$"
     return bool(re.match(pattern, s))
+
+
+def find_matching_position(store_list, subject):
+    """Index des passenden Eintrags oder None.
+
+    Bei mehreren Treffern gewinnt der längste Eintrag: sonst würde "Reis" das
+    speziellere "Reis hellblau" schlucken, da beide über den freien Zusatz matchen.
+    """
+    matches = [i for i, v in enumerate(store_list) if matches_template(subject, v)]
+    if not matches:
+        return None
+    return max(matches, key=lambda i: len(store_list[i]))
 
 
 def extract_store_prefix(subject):
     s = subject.lower().strip()
-    for store_name in STORES:
-        if s.startswith(store_name + " "):
-            return store_name, subject.strip()[len(store_name):].strip()
+    for alias, store_name in STORE_ALIASES.items():
+        if s.startswith(alias + " "):
+            return store_name, subject.strip()[len(alias):].strip()
     return None, subject.strip()
 
 
 def find_category_and_position(subject):
+    subject = subject.strip()
+
+    # Listeneinträge haben Vorrang vor der Prefix-Erkennung, damit Produktnamen,
+    # die mit einem Alias beginnen ("GG Oliven"), ihre Listenposition behalten.
+    for store_name, store_list in STORES.items():
+        pos = find_matching_position(store_list, subject)
+        if pos is not None:
+            return store_name, pos
+
     store_override, stripped = extract_store_prefix(subject)
 
     if store_override:
-        for i, v in enumerate(STORES[store_override]):
-            if matches_template(stripped, v):
-                return store_override, i
+        pos = find_matching_position(STORES[store_override], stripped)
+        if pos is not None:
+            return store_override, pos
         # Prefix erkannt, aber kein Template-Match → an den Anfang des Ladens einsortieren
         return store_override, -1
 
-    for store_name, store_list in STORES.items():
-        for i, v in enumerate(store_list):
-            if matches_template(subject.strip(), v):
-                return store_name, i
     return "unsortiert", 0
 
 

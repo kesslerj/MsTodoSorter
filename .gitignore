@@ -1,2 +1,5 @@
 .env
 token_cache.json
+.idea/
+__pycache__/
+.pytest_cache/
