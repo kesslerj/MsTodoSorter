@@ -62,7 +62,7 @@ laeden:
       - Ziegenfrischkäse
       - Stinkekäse
       - Bresso
-      - Sour Creme
+      - Sour Cream
       - Eiweiß Schokomousse
       # Getraenke, Chips, Nuesse
       - Cola
@@ -173,7 +173,7 @@ schreibweisen:
   "t.k. ": "TK "
   # Andere Namen fuer Eintraege oben
   "geschirrtabs": "Spülmaschinentabs"
-  "sour cream": "Sour Creme"
+  "sour creme": "Sour Cream"
 
 # Mengenangaben vorne. Eine Zahl ("2", "2,5", "2x") oder eine Folge von
 # Zahlwoertern, auch zusammengeschrieben ("fuenfhundert"), optional mit
