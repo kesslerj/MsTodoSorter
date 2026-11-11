@@ -1,21 +1,28 @@
 # MS Todo Einkaufsliste sortieren
 
+Sortiert die Einkaufsliste in MS To Do nach Läden und Regalreihenfolge: oben UNSORTIERT, dann ALDI und EDEKA, jeweils mit Trennzeile. Erledigte Einträge werden gelöscht, doppelte ohne Mengenangabe zusammengeführt.
+
+Im Alltag sortiert Home Assistant per Knopf, mit derselben Logik und denselben Regeln. Dieses Skript ist die Rückfalloption fürs Handy.
+
+## Aufbau
+
+- `sortierregeln.yaml`: Läden mit ihren Einträgen, Laden-Präfixe, Alexa-Schreibweisen, Mengenangaben. **Quelle ist die Datei in der HA-Config** (`einkaufsliste/sortierregeln.yaml`), hier liegt eine Kopie. Nach Änderungen dort die Kopie hier nachziehen.
+- `sortierung.py`: die Zuordnung ohne Zugriff auf MS To Do. Das Gegenstück in HA ist `custom_templates/einkaufsliste.jinja`.
+- `testfaelle.py`: Testfälle, die für beide gelten. In HA werden sie über die Template-API gegen das Jinja-Makro geprüft.
+- `sort_todos.py`: liest die Liste über die Graph-API, sortiert und schreibt Einträge ohne Zuordnung nach `unsortiert.txt`.
+
 ## Run
+
+    pip install -r requirements.txt
 
 File `.env`:
 
-    ACCESS_TOKEN=...
+    CLIENT_ID=...
     LIST_ID=...
 
-### Windows
-- `Aus Graph Explorer `ACCESS_TOKEN` kopieren
-    - https://developer.microsoft.com/en-us/graph/graph-explorer
-    - GET https://graph.microsoft.com/beta/me/outlook/taskFolders('AQMkADAwATE0OTYwLTQ4NzcALTdhY2QtMDACLTAwCgAuAAADRRw4fksEhU_rrF0G0-jTIQEApPXHxG5mgEmOIhc1S1OS_gAI6UHhwgAAAA==')/tasks
-    - Permissions: Task.Read und Tasks.ReadWrite (dafür auf POST umstellen)
-    - 
-- Ausführen:`python sort_todos.py`
+`CLIENT_ID` ist die App-Registrierung „ToDoSorter“ (nur persönliche Konten). Beim ersten Lauf fragt `auth.py` per Device-Login an, danach hält `token_cache.json` den Refresh-Token.
 
-
+    python sort_todos.py
 
 ## Tests
 
@@ -24,6 +31,3 @@ File `.env`:
 
 ## Todos
 - Dokumentieren, wo die List-Id herkommt
-- Einfachere Authentifizierung als Access-Token kopieren
-- auf dem Handy lauffähig machen
-- Nicht gefundene Einträge in eine Datei schreiben

@@ -1,0 +1,172 @@
+# Sortierregeln fuer die Einkaufsliste in MS To Do.
+#
+# Quelle ist diese Datei in der HA-Config (einkaufsliste/sortierregeln.yaml).
+# Eine Kopie liegt im Repo kesslerj/MsTodoSorter, dort liest sort_todos.py
+# dieselbe Datei. Nach jeder Aenderung hier die Kopie im Repo nachziehen.
+#
+# Zuordnung (custom_templates/einkaufsliste.jinja und sort_todos.py):
+# 1. Text glaetten: klein, Leerzeichen zusammengefasst, "schreibweisen" ersetzt.
+# 2. Mengenangabe vorne abschneiden ("2x", "500g", "fuenf hundert gramm").
+# 3. Ein Eintrag passt, wenn der Rest gleich ist oder mit Eintrag + Leerzeichen
+#    beginnt ("Joghurt Natur" passt zu "Joghurt", "Joghurteis" nicht).
+#    Bei mehreren Treffern in einem Laden gewinnt der laengste Eintrag, bei
+#    Treffern in mehreren Laeden der erste Laden.
+# 4. Ohne Treffer zaehlt ein Laden-Praefix ("Edeka Bionade", "GG ..."): der
+#    Eintrag kommt an den Anfang dieses Ladens.
+# 5. Sonst unsortiert.
+#
+# Reihenfolge der Laeden und Eintraege = Reihenfolge in der Liste.
+
+unsortiert:
+  trenner: "----------- UNSORTIERT -----------"
+
+laeden:
+  - name: aldi
+    trenner: "----------- ALDI -----------"
+    eintraege:
+      # Obst und Gemuese
+      - Obst
+      - Bananen
+      - Zucchini
+      - Rucola
+      - Tomaten
+      - Snacktomaten
+      - Gurke
+      - Paprika
+      - Schalotten
+      - Ingwer
+      - Rosenkohl
+      - Brokkoli
+      # Konserven etc.
+      - Apfelmus
+      - Senf
+      - Kokosnussmilch
+      - Salz
+      # Brot und Kaffee
+      - Schwarzbrot
+      - Graubrot
+      - Eiweißbrot
+      - Kaffee
+      # Schoki, Kekse, Nudeln, Reis
+      - Schoki
+      - Reis
+      - Reis hellblau
+      # Kuehltheke
+      - Hähnchen-/Putenaufschnitt
+      - Salami
+      - Gouda
+      - Erzherzog Johann
+      - Parmesan
+      - Ziegenfrischkäse
+      - Stinkekäse
+      - Bresso
+      - Sour Creme
+      - Eiweiß Schokomousse
+      # Getraenke, Chips, Nuesse
+      - Cola
+      - Apfelschorle
+      - Zero Getränke
+      - Chipsfrisch
+      - Salzige Mandeln
+      # Haushalt
+      - Klopapier
+      - Küchenrolle
+      - Spülmaschinentabs
+      - Zahnpasta
+      - Frischhaltefolie
+      - Müllbeutel
+      - Biomüllbeutel
+  - name: edeka
+    trenner: "----------- EDEKA -----------"
+    eintraege:
+      # Chips, Nuesse
+      - Chipsfrisch
+      # Getraenke
+      - Hella
+      - Osaft
+      - Bionade
+      # Konserven
+      - Passierte Tomaten
+      - Brühe
+      - Erasco
+      - Asia Suppe
+      - Gewürzgurken
+      - Schwarze Oliven
+      # Backen
+      - Mehl
+      - Backpulver
+      - Nesquik
+      # Brot
+      - Paniermehl
+      - Puffies
+      - Roggen Vollkornbrot GG
+      # Obst, Gemuese und Bio
+      - Möhren
+      - Milch
+      - Joghurt
+      - GG Erdnüsse ungeschält
+      # Saucen, Pasta etc.
+      - Currypaste
+      - Pommes Sauce
+      - Limettensaft
+      - Sambal
+      - Barilla
+      - Ravioli
+      # Fleischregal
+      - GG Oliven
+      - Schinken
+      - Kochschinken
+      - Schinkenwürfel
+      - Bacon
+      # MoPro
+      - Krautsalat
+      - Streukäse
+      - Mozzarella
+      - Saint Albray
+      - Butter
+      - Streichzart
+      - Frischkäse
+      - körniger Frischkäse
+      - Eiweißjoghurt
+      - Quark
+      - Magerquark
+      - Sahne
+      - Schmand
+      - Cremefine
+      - Skyr
+      - Butterschmalz
+      # Theke
+      - Leberwurst / Aufschnitt
+      - Käse
+      - Käsepapier
+      # TK
+      - TK Laugenstangen
+      - TK Himbeeren
+      - Frosta
+      - Eis
+      # Suesswaren
+      - Haribo
+
+# Laden-Praefixe vor dem Produktnamen. "GG" = Gut & Guenstig von Edeka.
+praefixe:
+  aldi: aldi
+  edeka: edeka
+  gg: edeka
+
+# Schreibweisen von Alexa, nur fuer die Zuordnung. Der Text in der Liste
+# bleibt, wie er ist. Ersetzt wird im geglaetteten (kleinen) Text.
+schreibweisen:
+  "t. k. ": "tk "
+  "t.k. ": "tk "
+
+# Mengenangaben vorne. Eine Zahl ("2", "2,5", "2x") oder eine Folge von
+# Zahlwoertern, auch zusammengeschrieben ("fuenfhundert"), optional mit
+# Einheit. Danach muss ein Leerzeichen folgen.
+mengen:
+  zahlwoerter: [ein, eine, einen, eins, zwei, drei, vier, fünf, sechs, sieben,
+                acht, neun, zehn, elf, zwölf, zwanzig, dreißig, vierzig, fünfzig,
+                hundert, tausend, und, halb, halbe, halbes, halben, anderthalb]
+  einheiten: [g, gr, gramm, kg, kilo, kilogramm, l, liter, ml, stück, stk,
+              packung, packungen, pack, päckchen, dose, dosen, flasche, flaschen,
+              becher, tüte, tüten, glas, gläser, bund, stange, stangen, beutel,
+              netz]

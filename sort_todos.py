@@ -1,361 +1,131 @@
-import requests
-from datetime import datetime
-import pytz
-import urllib.parse
-import re
-from dotenv import load_dotenv
+"""Einkaufsliste in MS To Do sortieren, direkt über die Graph-API.
+
+Rückfalloption fürs Handy. Normal sortiert Home Assistant per Knopf, mit
+derselben Logik (sortierung.py) und denselben Regeln (sortierregeln.yaml).
+"""
+
 import os
-import msal
+import urllib.parse
+from datetime import date, datetime
+
+import pytz
+import requests
+from dotenv import load_dotenv
 
 from auth import get_access_token
+from sortierung import lade_regeln, plan
 
 load_dotenv()
 
 access_token = get_access_token()
 headers = {
     "Authorization": f"Bearer {access_token}",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
 }
 
 LIST_ID = os.getenv("LIST_ID")
-
-ALDI = [
-    # Obst und Gemüse
-    "Obst", 
-    "Bananen",
-    "Zucchini",
-    "Rucola",
-    "Tomaten",
-    "Snacktomaten",
-    "Gurke",
-    "Paprika", 
-    "Schalotten",
-    "Ingwer",
-    "Rosenkohl",
-    "Brokkoli",
-    # Konserven etc.
-    "Apfelmus",
-    "Senf",
-    "Kokosnussmilch",
-    "Salz",
-    # Brot und Kaffee
-    "Schwarzbrot",
-    "Graubrot",
-    "Eiweißbrot", 
-    "Kaffee",
-    # Schoki, Kekse, Nudeln, Reis
-    "Schoki",
-    "Reis",
-    "Reis hellblau",
-    # Kühltheke
-    "Hähnchen-/Putenaufschnitt",
-    "Salami",
-    "Gouda",
-    "Erzherzog Johann",
-    "Parmesan",
-    "Ziegenfrischkäse",
-    "Stinkekäse",
-    "Bresso",
-    "Sour Creme",
-    "Eiweiß Schokomousse",
-    # Getränke, Chips, Nüsse
-    "Cola",
-    "Apfelschorle",
-    "Zero Getränke",
-    "Chipsfrisch",
-    "Salzige Mandeln",
-    # Haushalt
-    "Klopapier",
-    "Küchenrolle",
-    "Spülmaschinentabs",
-    "Zahnpasta",
-    "Frischhaltefolie",
-    "Müllbeutel",
-    "Biomüllbeutel"
-]
-EDEKA = [
-    # Chips, Nüsse
-    "Chipsfrisch",
-    # Getränke
-    "Hella",
-    "Osaft",
-    "Bionade",
-    # Konserven
-    "Passierte Tomaten",
-    "Brühe",
-    "Erasco",
-    "Asia Suppe",
-    "Gewürzgurken",
-    "Schwarze Oliven",
-    # Backen
-    "Mehl",
-    "Backpulver",
-    "Nesquik",
-    # Brot
-    "Paniermehl",
-    "Puffies", 
-    "Roggen Vollkornbrot GG",
-    # Obst, Gemüse und Bio
-    "Möhren", 
-    "Milch", 
-    "Joghurt",
-    "GG Erdnüsse ungeschält",
-    # Saucen, Pasta etc.
-    "Currypaste",
-    "Pommes Sauce",
-    "Limettensaft",
-    "Sambal",
-    "Barilla",
-    "Ravioli",
-    # Fleischregal
-    "GG Oliven",
-    "Schinken",
-    "Kochschinken",
-    "Schinkenwürfel",
-    "Bacon",
-    # MoPro 
-    "Krautsalat", 
-    "Streukäse",
-    "Mozzarella",
-    "Saint Albray",
-    "Butter",
-    "Streichzart",
-    "Frischkäse", 
-    "körniger Frischkäse",
-    "Eiweißjoghurt",
-    "Quark",
-    "Magerquark", 
-    "Sahne",
-    "Schmand",
-    "Cremefine",
-    "Skyr", 
-    "Butterschmalz",
-    # Theke
-    "Leberwurst / Aufschnitt", 
-    "Käse",
-    "Käsepapier",
-    # TK
-    "TK Laugenstangen",
-    "TK Himbeeren",
-    "Frosta",
-    "Eis",
-    # Süßwaren
-    "Haribo"
-]
-
-SEPARATOR_UNSORTIERT = "----------- UNSORTIERT -----------"
-SEPARATOR_ALDI = "----------- ALDI -----------"
-SEPARATOR_EDEKA = "----------- EDEKA -----------"
-SEPARATORS = {SEPARATOR_UNSORTIERT, SEPARATOR_ALDI, SEPARATOR_EDEKA}
+UNSORTIERT_DATEI = os.path.join(os.path.dirname(os.path.abspath(__file__)), "unsortiert.txt")
 
 
-STORES = {"aldi": ALDI, "edeka": EDEKA}
-
-# Zusätzliche Schreibweisen, die als Laden-Prefix gelten ("GG" = Gut & Günstig).
-STORE_ALIASES = {**{name: name for name in STORES}, "gg": "edeka"}
-
-
-def matches_template(subject, template):
-    s = subject.lower().strip()
-    t = template.lower()
-    # Matcht: exakt, "Joghurt 3x", "2 Joghurt", "2x Joghurt", "Joghurt 2,49 €"
-    # sowie beliebige Zusätze ("Joghurt Natur").
-    # Der Zusatz braucht führenden Whitespace, sonst würde "Joghurteis" mitmatchen.
-    pattern = rf"^(\d+x?\s+)?{re.escape(t)}(\s+.*)?$"
-    return bool(re.match(pattern, s))
-
-
-def find_matching_position(store_list, subject):
-    """Index des passenden Eintrags oder None.
-
-    Bei mehreren Treffern gewinnt der längste Eintrag: sonst würde "Reis" das
-    speziellere "Reis hellblau" schlucken, da beide über den freien Zusatz matchen.
-    """
-    matches = [i for i, v in enumerate(store_list) if matches_template(subject, v)]
-    if not matches:
-        return None
-    return max(matches, key=lambda i: len(store_list[i]))
-
-
-def extract_store_prefix(subject):
-    s = subject.lower().strip()
-    for alias, store_name in STORE_ALIASES.items():
-        if s.startswith(alias + " "):
-            return store_name, subject.strip()[len(alias):].strip()
-    return None, subject.strip()
-
-
-def find_category_and_position(subject):
-    subject = subject.strip()
-
-    # Listeneinträge haben Vorrang vor der Prefix-Erkennung, damit Produktnamen,
-    # die mit einem Alias beginnen ("GG Oliven"), ihre Listenposition behalten.
-    for store_name, store_list in STORES.items():
-        pos = find_matching_position(store_list, subject)
-        if pos is not None:
-            return store_name, pos
-
-    store_override, stripped = extract_store_prefix(subject)
-
-    if store_override:
-        pos = find_matching_position(STORES[store_override], stripped)
-        if pos is not None:
-            return store_override, pos
-        # Prefix erkannt, aber kein Template-Match → an den Anfang des Ladens einsortieren
-        return store_override, -1
-
-    return "unsortiert", 0
+def tasks_url(folder_id):
+    encoded = urllib.parse.quote(folder_id, safe="")
+    return f"https://graph.microsoft.com/beta/me/outlook/taskFolders('{encoded}')/tasks"
 
 
 def get_all_tasks(folder_id):
-    encoded = urllib.parse.quote(folder_id, safe='')
     url = (
-        f"https://graph.microsoft.com/beta/me/outlook/taskFolders('{encoded}')/tasks"
-        f"?$select=id,subject,status,dueDateTime"
-        f"&$filter=status ne 'completed'"
-        f"&$top=999"
+        f"{tasks_url(folder_id)}?$select=id,subject,status,dueDateTime"
+        f"&$filter=status ne 'completed'&$top=999"
     )
     resp = requests.get(url, headers=headers)
     print(f"  GET Status: {resp.status_code}")
     return resp.json().get("value", [])
 
 
-def recreate_task(folder_id, task):
-    encoded = urllib.parse.quote(folder_id, safe='')
-    body = {"subject": task["subject"]}
-    
-    if task.get("dueDateTime"):
-        dt_str = task["dueDateTime"]["dateTime"]
-        tz = task["dueDateTime"]["timeZone"]
-
-        if tz == "UTC":
-            # UTC-Zeit in Europe/Berlin umrechnen und nur das Datum nehmen
-            dt_utc = datetime.fromisoformat(dt_str.split(".")[0]).replace(tzinfo=pytz.utc)
-            dt_berlin = dt_utc.astimezone(pytz.timezone("Europe/Berlin"))
-            dt_str = dt_berlin.date().isoformat() + "T12:00:00.0000000"
-
-        body["dueDateTime"] = {"dateTime": dt_str, "timeZone": tz}
-
-    post_url = f"https://graph.microsoft.com/beta/me/outlook/taskFolders('{encoded}')/tasks"
-    resp = requests.post(post_url, headers=headers, json=body)
-    status = resp.status_code
-
-    if status in (200, 201):
-        del_resp = requests.delete(
-            f"https://graph.microsoft.com/beta/me/outlook/tasks/{task['id']}",
-            headers=headers
-        )
-        return status, del_resp.status_code
-    else:
-        print(f"      POST fehlgeschlagen {status}: {resp.text[:200]}")
-        return status, None
+def due_body(task):
+    if not task.get("dueDateTime"):
+        return None
+    dt_str = task["dueDateTime"]["dateTime"]
+    tz = task["dueDateTime"]["timeZone"]
+    if tz == "UTC":
+        # UTC-Zeit in Europe/Berlin umrechnen und nur das Datum nehmen
+        dt_utc = datetime.fromisoformat(dt_str.split(".")[0]).replace(tzinfo=pytz.utc)
+        dt_berlin = dt_utc.astimezone(pytz.timezone("Europe/Berlin"))
+        dt_str = dt_berlin.date().isoformat() + "T12:00:00.0000000"
+    return {"dateTime": dt_str, "timeZone": tz}
 
 
-def get_or_create_separator(folder_id, all_tasks, subject):
-    existing = next((t for t in all_tasks if t["subject"] == subject), None)
-    if existing:
-        return existing, False  # False = muss noch neu erstellt werden
-    encoded = urllib.parse.quote(folder_id, safe='')
-    resp = requests.post(
-        f"https://graph.microsoft.com/beta/me/outlook/taskFolders('{encoded}')/tasks",
-        headers=headers,
-        json={"subject": subject}
-    )
-    print(f"   [CREATED] Separator '{subject}'")
-    return resp.json(), True  # True = bereits frisch erstellt
+def anlegen(folder_id, subject, task=None):
+    body = {"subject": subject}
+    due = due_body(task) if task else None
+    if due:
+        body["dueDateTime"] = due
+    resp = requests.post(tasks_url(folder_id), headers=headers, json=body)
+    if resp.status_code not in (200, 201):
+        print(f"      POST fehlgeschlagen {resp.status_code}: {resp.text[:200]}")
+    return resp.status_code
 
 
-def delete_completed_tasks(folder_id):
-    encoded = urllib.parse.quote(folder_id, safe='')
-    url = (
-        f"https://graph.microsoft.com/beta/me/outlook/taskFolders('{encoded}')/tasks"
-        f"?$select=id,subject&$filter=status eq 'completed'&$top=999"
-    )
-    completed = requests.get(url, headers=headers).json().get("value", [])
-    print(f"   {len(completed)} erledigte Tasks gefunden")
-
-    if not completed:
-        return
-
+def loeschen(task_ids):
     # Batch-Request: bis zu 20 Requests pro Batch
-    batch_headers = {**headers, "Content-Type": "application/json"}
-    for i in range(0, len(completed), 20):
-        chunk = completed[i:i+20]
-        batch_body = {
+    for i in range(0, len(task_ids), 20):
+        chunk = task_ids[i:i + 20]
+        body = {
             "requests": [
-                {"id": str(j), "method": "DELETE", "url": f"/me/outlook/tasks/{t['id']}"}
+                {"id": str(j), "method": "DELETE", "url": f"/me/outlook/tasks/{t}"}
                 for j, t in enumerate(chunk)
             ]
         }
-        resp = requests.post(
-            "https://graph.microsoft.com/beta/$batch",
-            headers=batch_headers,
-            json=batch_body
-        )
+        resp = requests.post("https://graph.microsoft.com/beta/$batch", headers=headers, json=body)
         print(f"   [BATCH {resp.status_code}] {len(chunk)} Tasks gelöscht")
 
 
-print("\n🗑️ Lösche erledigte Tasks...")
-delete_completed_tasks(LIST_ID)
+def delete_completed_tasks(folder_id):
+    url = f"{tasks_url(folder_id)}?$select=id,subject&$filter=status eq 'completed'&$top=999"
+    completed = requests.get(url, headers=headers).json().get("value", [])
+    print(f"   {len(completed)} erledigte Tasks gefunden")
+    loeschen([t["id"] for t in completed])
 
-print("📋 Lade Einkaufsliste...")
-all_tasks = get_all_tasks(LIST_ID)
-print(f"   {len(all_tasks)} Tasks geladen")
 
-unsortiert = []
-aldi_tasks = []
-edeka_tasks = []
+def unsortiert_protokollieren(texte):
+    """Einträge ohne Zuordnung anhängen, um sie in die Regeln aufzunehmen."""
+    if not texte:
+        return
+    with open(UNSORTIERT_DATEI, "a", encoding="utf-8") as f:
+        for t in texte:
+            f.write(f"{date.today().isoformat()}\t{t}\n")
+    print(f"   {len(texte)} Einträge ohne Zuordnung in {UNSORTIERT_DATEI}")
 
-for task in all_tasks:
-    subj = task["subject"]
-    if subj in SEPARATORS:
-        continue
-    cat, pos = find_category_and_position(subj)
-    if cat == "aldi":
-        aldi_tasks.append((pos, task))
-    elif cat == "edeka":
-        edeka_tasks.append((pos, task))
-    else:
-        unsortiert.append((0, task))
 
-aldi_tasks.sort(key=lambda x: x[0])
-edeka_tasks.sort(key=lambda x: x[0])
+def main():
+    regeln = lade_regeln()
 
-print(f"\n   Unsortiert: {len(unsortiert)}")
-print(f"   Aldi: {len(aldi_tasks)}")
-print(f"   Edeka: {len(edeka_tasks)}")
+    print("\n🗑️ Lösche erledigte Tasks...")
+    delete_completed_tasks(LIST_ID)
 
-print("\n🔀 Sortiere...")
+    print("📋 Lade Einkaufsliste...")
+    all_tasks = get_all_tasks(LIST_ID)
+    print(f"   {len(all_tasks)} Tasks geladen")
+    nach_id = {t["id"]: t for t in all_tasks}
 
-# Edeka zuerst erstellen → landet ganz unten
-for _, task in reversed(edeka_tasks):
-    post_s, del_s = recreate_task(LIST_ID, task)
-    print(f"   [POST {post_s} | DEL {del_s}] [Edeka] {task['subject']}")
+    p = plan([{"summary": t["subject"], "uid": t["id"]} for t in all_tasks], regeln)
+    print(f"   {p['zahlen']}")
 
-sep_edeka, already_created = get_or_create_separator(LIST_ID, all_tasks, SEPARATOR_EDEKA)
-if not already_created:
-    post_s, del_s = recreate_task(LIST_ID, sep_edeka)
-    print(f"   [POST {post_s} | DEL {del_s}] {SEPARATOR_EDEKA}")
+    print("\n🔀 Sortiere...")
+    for e in p["anlegen"]:
+        task = nach_id.get(e.get("alt"))
+        status = anlegen(LIST_ID, e["summary"], task)
+        if task and status in (200, 201):
+            loeschen([task["id"]])
+        print(f"   [POST {status}] {e['summary']}")
 
-for _, task in reversed(aldi_tasks):
-    post_s, del_s = recreate_task(LIST_ID, task)
-    print(f"   [POST {post_s} | DEL {del_s}] [Aldi] {task['subject']}")
+    if p["loeschen"]:
+        print(f"\n🧹 {len(p['loeschen'])} doppelte Einträge und alte Trenner löschen")
+        loeschen(p["loeschen"])
 
-sep_aldi, already_created = get_or_create_separator(LIST_ID, all_tasks, SEPARATOR_ALDI)
-if not already_created:
-    post_s, del_s = recreate_task(LIST_ID, sep_aldi)
-    print(f"   [POST {post_s} | DEL {del_s}] {SEPARATOR_ALDI}")
+    unsortiert_protokollieren(p["unsortiert"])
+    print("\n✅ EINKAUFSLISTE SORTIERT!")
 
-for _, task in reversed(unsortiert):
-    post_s, del_s = recreate_task(LIST_ID, task)
-    print(f"   [POST {post_s} | DEL {del_s}] [Unsortiert] {task['subject']}")
 
-sep_unsortiert, already_created = get_or_create_separator(LIST_ID, all_tasks, SEPARATOR_UNSORTIERT)
-if not already_created:
-    post_s, del_s = recreate_task(LIST_ID, sep_unsortiert)
-    print(f"   [POST {post_s} | DEL {del_s}] {SEPARATOR_UNSORTIERT}")
-
-print("\n✅ EINKAUFSLISTE SORTIERT!")
-print(f"   {SEPARATOR_UNSORTIERT} ({len(unsortiert)} Items)")
-print(f"   {SEPARATOR_ALDI} ({len(aldi_tasks)} Items)")
-print(f"   {SEPARATOR_EDEKA} ({len(edeka_tasks)} Items)")
+if __name__ == "__main__":
+    main()
