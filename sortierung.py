@@ -117,9 +117,11 @@ def plan(items, regeln):
         if not z["menge"]:
             gesehen.append(z["schluessel"])
         e = {"summary": i["summary"], "alt": i["uid"], "pos": z["pos"]}
-        for k in ("due", "description"):
-            if i.get(k):
-                e[k] = i[k]
+        if i.get("due"):
+            e["due"] = i["due"]
+        # MS To Do liefert für leere Notizen "\r\n", die nicht mitkopieren
+        if (i.get("description") or "").strip():
+            e["description"] = i["description"].strip()
         gruppen.setdefault(z["laden"], []).append(e)
         if z["laden"] == "unsortiert":
             unsortiert.append(i["summary"])

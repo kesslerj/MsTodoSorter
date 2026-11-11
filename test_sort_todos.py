@@ -70,3 +70,7 @@ class TestPlan:
         items = [{"summary": "Milch", "uid": "u0", "due": "2026-11-20", "description": "fettarm"}]
         e = plan(items, REGELN)["anlegen"][0]
         assert (e["summary"], e["alt"], e["due"], e["description"]) == ("Milch", "u0", "2026-11-20", "fettarm")
+
+    def test_leere_notiz_wird_nicht_kopiert(self):
+        e = plan([{"summary": "Milch", "uid": "u0", "description": "\r\n"}], REGELN)["anlegen"][0]
+        assert "description" not in e
