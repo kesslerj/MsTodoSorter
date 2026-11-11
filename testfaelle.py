@@ -75,6 +75,10 @@ FAELLE = [
     ("GG Oliven", "edeka", "GG Oliven", False),
     ("Roggen Vollkornbrot GG", "edeka", "Roggen Vollkornbrot GG", False),
     ("Edeka Flens 12,49", "edeka", None, False),
+    # Ergänzt am 11.11.2026 aus dem Protokoll
+    ("Fünf hundert gramm hackfleisch", "edeka", "Hackfleisch", True),
+    ("Abraham Schinken", "edeka", "Abraham Schinken", False),
+    ("Schinken", "edeka", "Schinken", False),
     # Längster Treffer gewinnt, erster Laden bei Treffern in mehreren
     ("Reis", "aldi", "Reis", False),
     ("Reis hellblau", "aldi", "Reis hellblau", False),
