@@ -82,6 +82,8 @@ FAELLE = [
     ("Würstchen", "edeka", "Würstchen", False),
     ("2 Gläser Würstchen", "edeka", "Würstchen", True),
     ("Wiener würstchen", "unsortiert", None, False),
+    ("Getrocknete Tomaten", "edeka", "Getrocknete Tomaten", False),
+    ("Tomaten", "aldi", "Tomaten", False),
     # Längster Treffer gewinnt, erster Laden bei Treffern in mehreren
     ("Reis", "aldi", "Reis", False),
     ("Reis hellblau", "aldi", "Reis hellblau", False),
