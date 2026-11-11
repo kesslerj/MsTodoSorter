@@ -104,6 +104,9 @@ FAELLE = [
     ("Geschirrtabs", "aldi", "Spülmaschinentabs", False),
     ("Sour Cream", "aldi", "Sour Creme", False),
     ("Sour Creme", "aldi", "Sour Creme", False),
+    ("Pizzateig Kit", "aldi", "Pizzateig Kit", False),
+    ("2 Pizzateig Kits", "aldi", "Pizzateig Kits", True),
+    ("Pizzateig", "unsortiert", None, False),
     # Längster Treffer gewinnt, erster Laden bei Treffern in mehreren
     ("Reis", "aldi", "Reis", False),
     ("Reis hellblau", "aldi", "Reis hellblau", False),
@@ -137,4 +140,5 @@ ANZEIGE = [
     ("Geschirrtabs", "Spülmaschinentabs"),
     ("2 Packungen geschirrtabs", "2 Packungen Spülmaschinentabs"),
     ("Sour cream", "Sour Creme"),
+    ("Zwei pizzateig kits", "Zwei Pizzateig Kits"),
 ]
