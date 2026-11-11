@@ -46,6 +46,18 @@ FAELLE = [
     ("Joghurt 5x", "edeka", "Joghurt", True),
     ("Sahne zwei mal", "edeka", "Sahne", True),
     ("Möhren 500g", "edeka", "Möhren", True),
+    # Größe und Sack, ergänzt am 11.11.2026
+    ("Kleiner Sack Möhren", "edeka", "Möhren", True),
+    ("Ein kleiner Sack Möhren", "edeka", "Möhren", True),
+    ("Einen großen Sack Möhren", "edeka", "Möhren", True),
+    ("Ein Sack Möhren", "edeka", "Möhren", True),
+    ("2 Säcke Möhren", "edeka", "Möhren", True),
+    ("Zwei große Möhren", "edeka", "Möhren", True),
+    ("2x kleine Packung Haribo", "edeka", "Haribo", True),
+    ("Große Packung Haribo", "edeka", "Haribo", True),
+    ("Große Möhren", "unsortiert", None, False),
+    ("Kleiner Sack", "unsortiert", None, False),
+    ("Möhren kleiner Sack", "edeka", "Möhren", False),
     # Keine Menge, obwohl es so aussieht
     ("Eis", "edeka", "Eis", False),
     ("Eiweißbrot", "aldi", "Eiweißbrot", False),

@@ -167,7 +167,9 @@ schreibweisen:
 
 # Mengenangaben vorne. Eine Zahl ("2", "2,5", "2x") oder eine Folge von
 # Zahlwoertern, auch zusammengeschrieben ("fuenfhundert"), optional mit
-# Einheit. Danach muss ein Leerzeichen folgen.
+# Groesse und Einheit ("ein kleiner Sack"). Ohne Zahl zaehlt eine Groesse
+# nur mit Einheit ("kleiner Sack"), "Grosse Moehren" bleibt der Name.
+# Danach muss ein Leerzeichen folgen.
 mengen:
   zahlwoerter: [ein, eine, einen, eins, zwei, drei, vier, fünf, sechs, sieben,
                 acht, neun, zehn, elf, zwölf, zwanzig, dreißig, vierzig, fünfzig,
@@ -175,4 +177,7 @@ mengen:
   einheiten: [g, gr, gramm, kg, kilo, kilogramm, l, liter, ml, stück, stk,
               packung, packungen, pack, päckchen, dose, dosen, flasche, flaschen,
               becher, tüte, tüten, glas, gläser, bund, stange, stangen, beutel,
-              netz]
+              netz, sack, säcke, säckchen]
+  groessen: [klein, kleine, kleiner, kleines, kleinen, groß, große, großer,
+             großes, großen, gross, grosse, grosser, grosses, grossen, mittel,
+             mittlere, mittlerer, mittleres, mittleren]

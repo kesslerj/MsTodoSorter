@@ -36,9 +36,21 @@ def _einheiten(regeln):
     return "(?:" + "|".join(regeln["mengen"]["einheiten"]) + ")"
 
 
+def _groessen(regeln):
+    return "(?:" + "|".join(regeln["mengen"]["groessen"]) + ")"
+
+
 def menge_vorne(regeln):
-    """Mengenangabe am Anfang samt folgendem Leerzeichen."""
-    return rf"^(?:\d+(?:[.,]\d+)?|{_zahlwoerter(regeln)})\s*x?\s*(?:{_einheiten(regeln)}\.?)?\s+"
+    """Mengenangabe am Anfang samt folgendem Leerzeichen.
+
+    Zahl, optional Größe und Einheit ("2 große", "ein kleiner Sack"), oder
+    ohne Zahl Größe plus Einheit ("kleiner Sack").
+    """
+    z, g, e = _zahlwoerter(regeln), _groessen(regeln), _einheiten(regeln)
+    return (
+        rf"^(?:(?:\d+(?:[.,]\d+)?|{z})\s*x?(?:\s+{g})?(?:\s*{e}\.?)?"
+        rf"|{g}\s+{e}\.?)\s+"
+    )
 
 
 def menge_hinten(regeln):
