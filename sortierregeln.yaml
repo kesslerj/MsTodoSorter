@@ -5,7 +5,7 @@
 # dieselbe Datei. Nach jeder Aenderung hier die Kopie im Repo nachziehen.
 #
 # Zuordnung (custom_templates/einkaufsliste.jinja und sort_todos.py):
-# 1. Text glaetten: klein, Leerzeichen zusammengefasst, "schreibweisen" ersetzt.
+# 1. Text glaetten: Leerzeichen zusammengefasst, "schreibweisen" ersetzt, klein.
 # 2. Mengenangabe vorne abschneiden ("2x", "500g", "fuenf hundert gramm").
 # 3. Ein Eintrag passt, wenn der Rest gleich ist oder mit Eintrag + Leerzeichen
 #    beginnt ("Joghurt Natur" passt zu "Joghurt", "Joghurteis" nicht).
@@ -159,11 +159,14 @@ praefixe:
   edeka: edeka
   gg: edeka
 
-# Schreibweisen von Alexa, nur fuer die Zuordnung. Der Text in der Liste
-# bleibt, wie er ist. Ersetzt wird im geglaetteten (kleinen) Text.
+# Schreibweisen von Alexa. Links klein geschrieben, gesucht wird ohne
+# Ruecksicht auf Gross/klein. Rechts steht, wie es in der Liste erscheinen
+# soll. Der erkannte Eintrag erscheint ausserdem in der Schreibweise von oben
+# ("Zwei magerquark" -> "Zwei Magerquark"), bei der Weiterleitung von Alexa
+# und beim Sortieren.
 schreibweisen:
-  "t. k. ": "tk "
-  "t.k. ": "tk "
+  "t. k. ": "TK "
+  "t.k. ": "TK "
 
 # Mengenangaben vorne. Eine Zahl ("2", "2,5", "2x") oder eine Folge von
 # Zahlwoertern, auch zusammengeschrieben ("fuenfhundert"), optional mit

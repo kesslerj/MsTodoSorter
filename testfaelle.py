@@ -107,3 +107,25 @@ FAELLE = [
     ("Chipsfrisch", "aldi", "Chipsfrisch", False),
     ("Edeka Chipsfrisch", "edeka", "Chipsfrisch", False),
 ]
+
+# Text für die Liste: (Eingabe, erwartete Anzeige)
+ANZEIGE = [
+    ("T. k. laugenstangen", "TK Laugenstangen"),
+    ("t.k. himbeeren", "TK Himbeeren"),
+    ("Zwei magerquark", "Zwei Magerquark"),
+    ("Körniger frischkäse", "körniger Frischkäse"),
+    ("Edeka bionade", "Edeka Bionade"),
+    ("Aldi 2x gouda", "Aldi 2x Gouda"),
+    ("Joghurt natur", "Joghurt natur"),
+    ("joghurt", "Joghurt"),
+    ("  Fünf hundert   gramm hackfleisch ", "Fünf hundert gramm Hackfleisch"),
+    ("Möhren 500g", "Möhren 500g"),
+    ("Kleiner sack möhren", "Kleiner sack Möhren"),
+    ("Reis hellblau", "Reis hellblau"),
+    ("Wiener würstchen", "Wiener Würstchen"),
+    ("Gg oliven", "GG Oliven"),
+    ("Gg fischstäbchen", "Gg fischstäbchen"),
+    ("Fischstäbchen", "Fischstäbchen"),
+    ("T. k. pizza", "TK pizza"),
+    ("Edeka Flens 12,49", "Edeka Flens 12,49"),
+]

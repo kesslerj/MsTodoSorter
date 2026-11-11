@@ -1,7 +1,7 @@
 import pytest
 
 from sortierung import lade_regeln, plan, zuordnung
-from testfaelle import FAELLE
+from testfaelle import ANZEIGE, FAELLE
 
 REGELN = lade_regeln()
 LAEDEN = {l["name"]: l["eintraege"] for l in REGELN["laeden"]}
@@ -18,6 +18,16 @@ def test_zuordnung(text, laden, eintrag, menge):
     else:
         assert z["pos"] == LAEDEN[laden].index(eintrag)
     assert z["menge"] == menge
+
+
+@pytest.mark.parametrize("text,anzeige", ANZEIGE)
+def test_anzeige(text, anzeige):
+    assert zuordnung(text, REGELN)["anzeige"] == anzeige
+
+
+def test_plan_legt_mit_anzeige_an():
+    p = plan([{"summary": "Zwei magerquark", "uid": "u0"}], REGELN)
+    assert p["anlegen"][0]["summary"] == "Zwei Magerquark"
 
 
 class TestGoudaPrefixParity:

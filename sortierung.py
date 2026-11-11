@@ -20,11 +20,42 @@ def lade_regeln(pfad=REGELN_DATEI):
         return yaml.safe_load(f)
 
 
-def glaetten(text, regeln):
-    t = re.sub(r"\s+", " ", str(text).lower()).strip()
+def korrigiert(text, regeln):
+    """Text mit den Schreibweisen aus den Regeln, Groß/klein sonst wie getippt.
+
+    Leerzeichen zusammengefasst, "schreibweisen" ohne Rücksicht auf Groß/klein
+    ersetzt ("T. k. laugenstangen" -> "TK laugenstangen"). Klein geschrieben ist
+    das Ergebnis gleich glaetten(), Zeichen für Zeichen.
+    """
+    t = re.sub(r"\s+", " ", str(text)).strip()
     for alt, neu in (regeln.get("schreibweisen") or {}).items():
-        t = t.replace(alt, neu)
+        teile, pos, out = t.lower().split(alt), 0, ""
+        for n, teil in enumerate(teile):
+            out += t[pos:pos + len(teil)]
+            pos += len(teil)
+            if n < len(teile) - 1:
+                out += neu
+                pos += len(alt)
+        t = out
     return t.strip()
+
+
+def glaetten(text, regeln):
+    return korrigiert(text, regeln).lower()
+
+
+def _anzeige(t, g, r, eintrag):
+    """Text für die Liste: der erkannte Eintrag in seiner Schreibweise.
+
+    t ist der korrigierte Text, g derselbe klein, r der Rest von g nach
+    Mengenangabe und Laden-Präfix, beginnend mit dem Eintrag. Davor und
+    dahinter bleibt der Text, wie er war.
+    """
+    e = re.sub(r"\s+", " ", eintrag).strip()
+    if len(t) != len(g):
+        return t
+    p = len(g) - len(r)
+    return t[:p] + e + t[p + len(e):]
 
 
 def _zahlwoerter(regeln):
@@ -76,8 +107,9 @@ def treffer(rest, eintraege):
 
 
 def zuordnung(text, regeln):
-    """{"laden", "pos", "menge", "schluessel"} wie das Jinja-Makro zuordnung()."""
-    g = glaetten(text, regeln)
+    """{"laden", "pos", "menge", "schluessel", "anzeige"} wie das Jinja-Makro."""
+    t = korrigiert(text, regeln)
+    g = t.lower()
     vorne = menge_vorne(regeln)
     rest = re.sub(vorne, "", g)
     menge = rest != g or bool(re.search(menge_hinten(regeln), g))
@@ -86,7 +118,8 @@ def zuordnung(text, regeln):
     for laden in regeln["laeden"]:
         p = treffer(rest, laden["eintraege"])
         if p >= 0:
-            return {"laden": laden["name"], "pos": p, "menge": menge, "schluessel": g}
+            return {"laden": laden["name"], "pos": p, "menge": menge, "schluessel": g,
+                    "anzeige": _anzeige(t, g, rest, laden["eintraege"][p])}
 
     # 2. Laden-Präfix, danach wieder eine Menge erlaubt ("Aldi 2 Gouda")
     for alias, name in (regeln.get("praefixe") or {}).items():
@@ -94,14 +127,16 @@ def zuordnung(text, regeln):
             r1 = rest[len(alias):].strip()
             r2 = re.sub(vorne, "", r1)
             laden = next(l for l in regeln["laeden"] if l["name"] == name)
+            p = treffer(r2, laden["eintraege"])
             return {
                 "laden": name,
-                "pos": treffer(r2, laden["eintraege"]),
+                "pos": p,
                 "menge": menge or r2 != r1,
                 "schluessel": g,
+                "anzeige": _anzeige(t, g, r2, laden["eintraege"][p]) if p >= 0 else t,
             }
 
-    return {"laden": "unsortiert", "pos": 0, "menge": menge, "schluessel": g}
+    return {"laden": "unsortiert", "pos": 0, "menge": menge, "schluessel": g, "anzeige": t}
 
 
 def plan(items, regeln):
@@ -128,7 +163,7 @@ def plan(items, regeln):
             continue
         if not z["menge"]:
             gesehen.append(z["schluessel"])
-        e = {"summary": i["summary"], "alt": i["uid"], "pos": z["pos"]}
+        e = {"summary": z["anzeige"], "alt": i["uid"], "pos": z["pos"]}
         if i.get("due"):
             e["due"] = i["due"]
         # MS To Do liefert für leere Notizen "\r\n", die nicht mitkopieren
