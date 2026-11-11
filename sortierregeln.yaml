@@ -92,6 +92,7 @@ laeden:
       - Asia Suppe
       - Gewürzgurken
       - Schwarze Oliven
+      - Seelachsschnitzel
       # Backen
       - Mehl
       - Backpulver
@@ -107,6 +108,7 @@ laeden:
       - GG Erdnüsse ungeschält
       # Saucen, Pasta etc.
       - Currypaste
+      - Heinz Knoblauch Sauce
       - Pommes Sauce
       - Limettensaft
       - Sambal
@@ -167,6 +169,9 @@ praefixe:
 schreibweisen:
   "t. k. ": "TK "
   "t.k. ": "TK "
+  # Andere Namen fuer Eintraege oben
+  "geschirrtabs": "Spülmaschinentabs"
+  "sour cream": "Sour Creme"
 
 # Mengenangaben vorne. Eine Zahl ("2", "2,5", "2x") oder eine Folge von
 # Zahlwoertern, auch zusammengeschrieben ("fuenfhundert"), optional mit

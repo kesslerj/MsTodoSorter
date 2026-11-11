@@ -98,6 +98,12 @@ FAELLE = [
     ("6 Wiener", "edeka", "Wiener", True),
     ("Getrocknete Tomaten", "edeka", "Getrocknete Tomaten", False),
     ("Tomaten", "aldi", "Tomaten", False),
+    ("Seelachsschnitzel", "edeka", "Seelachsschnitzel", False),
+    ("Heinz Knoblauch Sauce", "edeka", "Heinz Knoblauch Sauce", False),
+    ("Pommes Sauce", "edeka", "Pommes Sauce", False),
+    ("Geschirrtabs", "aldi", "Spülmaschinentabs", False),
+    ("Sour Cream", "aldi", "Sour Creme", False),
+    ("Sour Creme", "aldi", "Sour Creme", False),
     # Längster Treffer gewinnt, erster Laden bei Treffern in mehreren
     ("Reis", "aldi", "Reis", False),
     ("Reis hellblau", "aldi", "Reis hellblau", False),
@@ -128,4 +134,7 @@ ANZEIGE = [
     ("Fischstäbchen", "Fischstäbchen"),
     ("T. k. pizza", "TK pizza"),
     ("Edeka Flens 12,49", "Edeka Flens 12,49"),
+    ("Geschirrtabs", "Spülmaschinentabs"),
+    ("2 Packungen geschirrtabs", "2 Packungen Spülmaschinentabs"),
+    ("Sour cream", "Sour Creme"),
 ]
