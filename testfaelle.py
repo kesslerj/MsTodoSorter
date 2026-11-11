@@ -79,6 +79,9 @@ FAELLE = [
     ("Fünf hundert gramm hackfleisch", "edeka", "Hackfleisch", True),
     ("Abraham Schinken", "edeka", "Abraham Schinken", False),
     ("Schinken", "edeka", "Schinken", False),
+    ("Würstchen", "edeka", "Würstchen", False),
+    ("2 Gläser Würstchen", "edeka", "Würstchen", True),
+    ("Wiener würstchen", "unsortiert", None, False),
     # Längster Treffer gewinnt, erster Laden bei Treffern in mehreren
     ("Reis", "aldi", "Reis", False),
     ("Reis hellblau", "aldi", "Reis hellblau", False),
